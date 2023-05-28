@@ -97,8 +97,19 @@ class MortgageCalculator:
         loan_terms = int(self.loan_term_entry.get())
         property_taxes = float(self.property_taxes_entry.get()) / 12
         house_insurance = float(self.house_insurance_entry.get()) / 12
+        
+        #calculating funding fee (based on VA loans)
+        fund = (downpay / house_price) * 100
+        if fund < 5:
+            fund_fee = 0.0215
+        elif 5 < fund < 10:
+            fund_fee = 0.015
+        elif fund > 10:
+            fund_fee = 0.0125
 
-        total_loan = house_price - downpay
+        fund_fee_print = fund_fee*100
+        fund_fee_cost = (house_price - downpay) * fund_fee
+        total_loan = (house_price - downpay) + fund_fee_cost
         monthly_interest_rate = interest_rate / 12
 
         loan_term_months = loan_terms * 12
@@ -109,6 +120,7 @@ class MortgageCalculator:
 
         total = monthly_payment + total_taxes
 
+        self.funding_fee_label.config(text=f"The funding fee is: $ {fund_fee_print:.2f}%")
         self.mortgage_label.config(text=f"The mortgage payment is: $ {monthly_payment:.2f}")
         self.taxes_label.config(text=f"Taxes and insurance is: $ {total_taxes:.2f}")
         self.total_label.config(text=f"Your total estimate monthly payment is: $ {total:.2f}")
